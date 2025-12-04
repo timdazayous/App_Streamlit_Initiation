@@ -15,19 +15,19 @@ if uploaded_file is not None:
         data_df = pd.read_csv(uploaded_file)
 
         st.subheader('Affichage du fichier CSV en entier')
-        st.dataframe(data_df)
+        st.dataframe(data_df, width='stretch')
         
         st.subheader('Affichage des 5 premieres lignes')
-        st.dataframe(data_df.head())
+        st.dataframe(data_df.head(), width='stretch')
         
         st.subheader('Affichage des statistiques descriptives')
-        st.dataframe(data_df.describe(), use_container_width=True)
+        st.dataframe(data_df.describe(), width='stretch')
 
         st.subheader('Selectionnez les colonnes à afficher')
         columns = st.multiselect("Colonnes sélectionnées", options=data_df.columns.tolist(), default=data_df.columns.tolist())
         if columns:
             # affiche data_df pour seulement les colonnes selectionnées
-            st.dataframe(data_df[columns])
+            st.dataframe(data_df[columns], width='stretch')
 
         st.subheader('Sélectionner deux colonnes pour générer un graphique interactif')
         # par defaut les deux premiers colonnes numeriques
@@ -57,6 +57,29 @@ if uploaded_file is not None:
             else:
                 # st.error('❌ Colonnes numeriques uniquement {col_x}={data_df[col_x].dtype}, {col_y}={data_df[col_y].dtype}') # debug
                 st.error('❌ Colonnes numeriques uniquement')
+
+        # filtrage des données en fonction d'une colonne et d'une valeur specifique
+        st.subheader('Selectionnez une colonne est une valeur spécifique pour filter les données')
+        # selection de la colonne
+        columns_filter = st.selectbox('Choisissez la colonne à filtrer', options=data_df.columns.tolist())
+
+        st.subheader('Selectionnez la valeur à filtrer')
+        # selection des valeurs uniques dans la colonne selectionnée
+        unique_values = sorted(data_df[columns_filter].dropna().unique())
+        # l'ajout de [-- Toutes __] permet de juste afficher tout si aps de saisie de valeur
+        value_filter = st.selectbox(f"Sélectionnez une valeur dans {columns_filter}", options=['-- Toutes --'] + unique_values, index=0)
+
+        # filtrage par bouton
+        if st.button('Filtrer') and value_filter != '-- Toutes --':
+            data_filtered = data_df[data_df[columns_filter] == value_filter]
+
+            st.success(f"{len(data_filtered)} lignes trouvées pour {value_filter}")
+            st.subheader(f'Colonne {columns_filter} filtrée avec {value_filter}')
+            st.dataframe(data_filtered, width='stretch')
+
+
+
+
     except Exception as e:
-        st.error(f"Erreur innatendue : {e}")
+        st.error(f"❌ Erreur innatendue : {e}")
     
