@@ -85,7 +85,7 @@ if uploaded_file is not None:
         column_histo = st.selectbox("Choisissez une colonne", options=columns_numeric)
 
         # selection d'un nombre de bins avec un slider
-        nb_bins = st.slider("Selectionnez le nombre de bacs pour l'histogramme", min_value=5, max_value=50, value=25, step=1)
+        nb_bins = st.slider("Selectionnez le nombre de bacs pour l'histogramme", min_value=5, max_value=1000, value=25, step=1)
                         
         # histogramme sur la colonne choisie avec nombre de bins personnalisés par l'user
         fig, ax = plt.subplots()
