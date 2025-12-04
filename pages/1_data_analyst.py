@@ -80,13 +80,13 @@ if uploaded_file is not None:
         # histogramme a partir d'une colonne numerique
         st.subheader("Création d'un histogramme à partir d'une colonne numerique")
         
-        # selection d'un colonne numerique
+        # selection d'une colonne numerique column_histo
         columns_numeric = data_df.select_dtypes(include=['int64', 'float64', 'int32', 'float32']).columns.tolist()
         column_histo = st.selectbox("Choisissez une colonne", options=columns_numeric)
 
         # selection d'un nombre de bins avec un slider
-        nb_bins = st.slider("Selectionnez le nombre de bacs pour l'histogramme", min_value=5, max_value=1000, value=25, step=1)
-                        
+        nb_bins = st.slider("Selectionnez le nombre de bacs pour l'histogramme", min_value=5, max_value=100, value=25, step=1)
+
         # histogramme sur la colonne choisie avec nombre de bins personnalisés par l'user
         fig, ax = plt.subplots()
         ax.hist(data_df[column_histo].dropna(), bins=nb_bins, color='skyblue')
@@ -95,6 +95,10 @@ if uploaded_file is not None:
         ax.set_ylabel('Fréquence')
         ax.grid(True)
         st.pyplot(fig)
+
+        st.subheader('Affichage des statistiques descriptives')
+        st.dataframe(data_df.describe(), width='stretch')
+        # a terminer valeur manquante st.dataframe(data_df) 
 
     except Exception as e:
         st.error(f"❌ Erreur innatendue : {e}")
