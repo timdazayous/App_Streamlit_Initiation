@@ -49,7 +49,7 @@ if uploaded_file is not None:
             # st.write(f"Debug: X={col_x} (type: {data_df[col_x].dtype}), Y={col_y} (type: {data_df[col_y].dtype})") # debug
             
             # verification que ce sont bien des valeurs numeriques dans ces colonnes
-            if data_df[col_x].dtype in ['float64', 'int64', 'int32'] and data_df[col_y].dtype in ['float64', 'int64', 'int32']:
+            if data_df[col_x].dtype in ['int64', 'float64', 'int32', 'float32'] and data_df[col_y].dtype in ['float64', 'int64', 'int32']:
                 fig, ax = plt.subplots()
                 sns.scatterplot(data=data_df, x=col_x, y=col_y,ax=ax)
                 ax.set_title(f"{col_y} vs {col_x}")
@@ -77,8 +77,24 @@ if uploaded_file is not None:
             st.subheader(f'Colonne {columns_filter} filtrée avec {value_filter}')
             st.dataframe(data_filtered, width='stretch')
 
+        # histogramme a partir d'une colonne numerique
+        st.subheader("Création d'un histogramme à partir d'une colonne numerique")
+        
+        # selection d'un colonne numerique
+        columns_numeric = data_df.select_dtypes(include=['int64', 'float64', 'int32', 'float32']).columns.tolist()
+        column_histo = st.selectbox("Choisissez une colonne", options=columns_numeric)
 
-
+        # selection d'un nombre de bins avec un slider
+        nb_bins = st.slider("Selectionnez le nombre de bacs pour l'histogramme", min_value=5, max_value=50, value=25, step=1)
+                        
+        # histogramme sur la colonne choisie avec nombre de bins personnalisés par l'user
+        fig, ax = plt.subplots()
+        ax.hist(data_df[column_histo].dropna(), bins=nb_bins, color='skyblue')
+        ax.set_title(f"Historigramme de {column_histo}")
+        ax.set_xlabel(column_histo)
+        ax.set_ylabel('Fréquence')
+        ax.grid(True)
+        st.pyplot(fig)
 
     except Exception as e:
         st.error(f"❌ Erreur innatendue : {e}")
